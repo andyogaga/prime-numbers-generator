@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   Container,
   SearchSection,
@@ -12,17 +12,21 @@ import {
   Table,
 } from "./styles";
 import Loader from "../../components/loader";
-import { generatePrimeNumbers, checkValueIsNumber } from "../../utils/helper";
+import { checkPrimeWithSoE, checkValueIsNumber } from "../../utils/helper";
 
 const Home = () => {
   const [primesLoading, setPrimesLoading] = useState(false);
   const [activePrimes, setActivePrimes] = useState([]);
   const [amountOfPrimes, setAmountOfPrimes] = useState(10);
 
-  useEffect(() => {
-    const generatedPrimes = generatePrimeNumbers();
+  const myGetPrimesCallback = useCallback(async () => {
+    const generatedPrimes = await checkPrimeWithSoE();
     setActivePrimes(generatedPrimes);
   }, []);
+
+  useEffect(() => {
+    myGetPrimesCallback();
+  }, [myGetPrimesCallback]);
 
   return (
     <Container>
@@ -35,10 +39,10 @@ const Home = () => {
             placeholder="Enter amount of Primes"
           />
           <SearchButton
-            onClick={(e) => {
+            onClick={async (e) => {
               if (checkValueIsNumber(amountOfPrimes)) {
                 setPrimesLoading(true);
-                const generatedPrimes = generatePrimeNumbers(amountOfPrimes);
+                const generatedPrimes = await checkPrimeWithSoE(amountOfPrimes);
                 setActivePrimes(generatedPrimes);
                 setPrimesLoading(false);
               }
@@ -54,7 +58,7 @@ const Home = () => {
         <PrimesContainer>
           {activePrimes && activePrimes.length
             ? activePrimes.map((prime, i) => (
-                <PrimeCard key={i}>
+                <PrimeCard key={i} data-testid={`prime-view-${prime}`}>
                   <PrimeText>{prime}</PrimeText>
                 </PrimeCard>
               ))
@@ -63,23 +67,34 @@ const Home = () => {
       </SearchSection>
 
       <Table style={{ width: "100%" }}>
-        <tr>
-          <TableCell>Primes</TableCell>
-          {activePrimes.map((prime) => (
-            <TableCell style={{ fontWeight: "bold" }}>{prime}</TableCell>
-          ))}
-        </tr>
+        <thead>
+          <tr>
+            <TableCell>Primes</TableCell>
+            {activePrimes.map((prime) => (
+              <TableCell key={prime} style={{ fontWeight: "bold" }}>
+                {prime}
+              </TableCell>
+            ))}
+          </tr>
+        </thead>
 
         {activePrimes.map((primeColumn) => {
           return (
-            <tr>
-              <TableCell style={{ fontWeight: "bold" }}>
-                {primeColumn}
-              </TableCell>
-              {activePrimes.map((primeCell) => (
-                <TableCell>{primeColumn * primeCell}</TableCell>
-              ))}
-            </tr>
+            <tbody key={`prime-table-${primeColumn}`}>
+              <tr>
+                <TableCell style={{ fontWeight: "bold" }}>
+                  {primeColumn}
+                </TableCell>
+                {activePrimes.map((primeCell) => (
+                  <TableCell
+                    key={`prime-table-${primeCell}-${primeColumn}`}
+                    data-testid={`prime-table-${primeCell}-${primeColumn}`}
+                  >
+                    {primeColumn * primeCell}
+                  </TableCell>
+                ))}
+              </tr>
+            </tbody>
           );
         })}
       </Table>
