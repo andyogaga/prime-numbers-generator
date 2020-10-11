@@ -42,9 +42,10 @@ const Home = () => {
             onClick={async (e) => {
               if (checkValueIsNumber(amountOfPrimes)) {
                 setPrimesLoading(true);
-                const generatedPrimes = await checkPrimeWithSoE(amountOfPrimes);
-                setActivePrimes(generatedPrimes);
-                setPrimesLoading(false);
+                checkPrimeWithSoE(amountOfPrimes).then((generatedPrimes) => {
+                  setActivePrimes(generatedPrimes);
+                  setPrimesLoading(false);
+                });
               }
             }}
           >
