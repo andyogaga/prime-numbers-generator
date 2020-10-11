@@ -39,7 +39,7 @@ const Home = () => {
             placeholder="Enter amount of Primes"
           />
           <SearchButton
-            onClick={async (e) => {
+            onClick={(e) => {
               if (checkValueIsNumber(amountOfPrimes)) {
                 setPrimesLoading(true);
                 checkPrimeWithSoE(amountOfPrimes).then((generatedPrimes) => {
