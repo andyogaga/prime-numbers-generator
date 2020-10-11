@@ -55,23 +55,29 @@ export const checkPrimeWithSoE = (primesNeededString = 10) => {
  */
 
 export const generatePrimeNumbers = (noOfPrimes = 10, lastArr = []) => {
-  var arr = [2];
+  var workingArray = [2];
+
+  // Replace working array with latest array of primes
   if (lastArr && lastArr.length) {
-    arr = lastArr;
+    workingArray = lastArr;
   }
+  // Returns the number of primes needed when we reach that limit
   if (lastArr && noOfPrimes < lastArr.length) {
     return lastArr.slice(0, noOfPrimes);
   }
+
+  // Checks for prime for only odd numbers after 3 or last value of gotten primes.
   for (
-    var i = arr.length === 1 ? 3 : arr[arr.length - 1] + 2;
-    arr.length < noOfPrimes;
+    var i =
+      workingArray.length === 1 ? 3 : workingArray[workingArray.length - 1] + 2;
+    workingArray.length < noOfPrimes;
     i += 2
   ) {
-    if (checkIfPrime(i, arr)) {
-      arr.push(i);
+    if (checkIfPrime(i, workingArray)) {
+      workingArray.push(i);
     }
   }
-  return arr;
+  return workingArray;
 };
 
 /**
@@ -80,16 +86,16 @@ export const generatePrimeNumbers = (noOfPrimes = 10, lastArr = []) => {
  * @param {*} arr - array of previously generated prime numbers below the number to be checked
  */
 
-const checkIfPrime = (num, arr) => {
-  if (!arr || !arr.length) {
+const checkIfPrime = (num, workingArray) => {
+  if (!workingArray || !workingArray.length) {
     return false;
   }
   // use only previous values generated to test for prime (other values are negligible) => Better performance
-  for (var i = 0; i < arr.length; i++) {
-    if (num % arr[i] === 0) {
+  for (var i = 0; i < workingArray.length; i++) {
+    if (num % workingArray[i] === 0) {
       return false;
     }
-    if (arr[i + 1] && Math.pow(arr[i + 1], 2) > num) {
+    if (workingArray[i + 1] && Math.pow(workingArray[i + 1], 2) > num) {
       break;
     }
   }
